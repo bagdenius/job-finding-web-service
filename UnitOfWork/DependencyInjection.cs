@@ -16,7 +16,7 @@ namespace UnitOfWorkSpace
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddDbContext<DatabaseContext>(options =>
-                options.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=Resumes&Vacancies"));
+                options.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=Resumes&Vacancies;Trusted_Connection=True;MultipleActiveResultSets=true"));
             return services;
         }
     }

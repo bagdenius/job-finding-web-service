@@ -11,7 +11,7 @@ namespace Database
             : base(options)
         {
             //Database.EnsureDeleted();
-            //Database.EnsureCreated();
+            Database.EnsureCreated();
             this.Seed();
         }
 
