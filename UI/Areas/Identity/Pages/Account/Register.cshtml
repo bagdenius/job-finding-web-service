@@ -1,0 +1,90 @@
+﻿@page
+@using UI.Areas.Identity.Pages.Account
+@using UI.Extensions
+@model RegisterModel
+@{
+    ViewData["Title"] = "Реєстрація роботодавця";
+}
+
+<div class="text-center mt-5 my-lg-5">
+    <h1 class="display-6">@ViewData["Title"]</h1>
+</div>
+
+<div class="row">
+    <div class="col">
+        <form asp-route-returnUrl="@Model.ReturnUrl" method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
+
+            <div class="mb-3">
+                <label asp-for="Input.FullName"></label>
+                <input asp-for="Input.FullName" class="form-control" />
+                <span asp-validation-for="Input.FullName" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Input.Organisation"></label>
+                <input asp-for="Input.Organisation" class="form-control" />
+                <span asp-validation-for="Input.Organisation" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Input.Sector"></label>
+                <select asp-for="Input.Sector" class="form-control" placeholder="*Інформаційні технології">
+                    @foreach(Enum value in Enum.GetValues(typeof(Sector)))
+                    {
+                        <option>@value.GetDisplayName()</option>
+                    }                    
+                </select>
+                <span asp-validation-for="Input.Sector" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Input.EmployeesCount"></label>
+                <select asp-for="Input.EmployeesCount" class="form-control" placeholder="*1-5">
+                    <option>1-5</option>
+                    <option>5-20</option>
+                    <option>20-100</option>
+                    <option>100-500</option>
+                    <option>500-2000</option>
+                    <option>більше 2000</option>
+                </select>
+                <span asp-validation-for="Input.EmployeesCount" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Input.Bio"></label>
+                <textarea asp-for="Input.Bio" class="form-control"></textarea>
+                <span asp-validation-for="Input.Bio" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Input.Email"></label>
+                <input asp-for="Input.Email" autocomplete="username" class="form-control" />
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Input.Password"></label>
+                <input asp-for="Input.Password" autocomplete="new-password" class="form-control" />
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Input.ConfirmPassword"></label>
+                <input asp-for="Input.ConfirmPassword" autocomplete="new-password" class="form-control" />
+                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Зареєструватись</button>
+        </form>
+    </div>
+    <div class="col d-none d-md-block text-center">
+        <img src="~/img/corporate_unlocked.svg" height="500" />
+    </div>
+</div>
+
+
+
+@section Scripts {
+<partial name="_ValidationScriptsPartial" />
+}

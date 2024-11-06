@@ -1,0 +1,21 @@
+﻿@page
+@using UI.Areas.Identity.Pages.Account
+@model ConfirmEmailModel
+
+@{
+    ViewData["Title"] = "Підтвердження електронної адреси";
+}
+
+<div class="text-center mt-5 my-lg-5">
+    <h1 class="display-6">@ViewData["Title"]</h1>
+</div>
+
+<div class="d-flex justify-content-center">
+    <lottie-player src="https://assets8.lottiefiles.com/packages/lf20_yVn0qQ.json" background="transparent" speed="1" 
+                   style="width: 300px; height: 300px;" loop autoplay>
+    </lottie-player>
+</div>
+
+<p class="text-center my-lg-5">
+    @Model.StatusMessage
+</p>

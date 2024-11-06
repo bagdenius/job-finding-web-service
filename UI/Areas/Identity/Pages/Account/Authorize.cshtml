@@ -1,0 +1,48 @@
+@page
+@using UI.Areas.Identity.Pages.Account
+@model AuthorizeModel
+
+@{
+    ViewData["Title"] = "Реєстрація працівника";
+}
+
+<div class="text-center mt-5 my-lg-5">
+    <h1 class="display-6">@ViewData["Title"]</h1>
+</div>
+
+<div class="row">
+    <div class="col">
+        <form method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
+
+            <div class="mb-3">
+                <label asp-for="Input.FullName"></label>
+                <input asp-for="Input.FullName" class="form-control" />
+                <span asp-validation-for="Input.FullName" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Input.Email"></label>
+                <input asp-for="Input.Email" autocomplete="username" class="form-control" />
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Input.Password"></label>
+                <input asp-for="Input.Password" autocomplete="new-password" class="form-control" />
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Input.ConfirmPassword"></label>
+                <input asp-for="Input.ConfirmPassword" autocomplete="new-password" class="form-control" />
+                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Зареєструватись</button>
+        </form>
+    </div>
+    <div class="col d-none d-md-block text-center">
+        <img src="~/img/corporate_unlocked.svg" height="500" />
+    </div>
+</div>

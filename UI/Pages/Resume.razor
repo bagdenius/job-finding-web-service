@@ -1,0 +1,240 @@
+﻿@page "/resume/{userid}"
+@attribute [Authorize]
+@inject UserManager<User> userManager
+
+<div class="text-center my-5">
+    <h1 class="display-6">Резюме/профіль користувача</h1>
+</div>
+
+<style>
+    .resume {
+        padding-bottom: 20em;
+        display: grid;
+        grid-template-rows: 250px 700px;
+        grid-template-areas:
+            "resume-head"
+            "resume-data";
+        border-style: solid;
+        border-width: 3px;
+        border-radius: 20px;
+        padding: 20px;
+    }
+
+    .resume-head {
+        grid-area: resume-head;
+        padding-left: 30px;
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+    }
+
+    .resume-data {
+        grid-area: resume-data;
+        display: grid;
+        grid-template-columns: 1fr 1.5fr;
+        grid-template-rows: 1fr 1fr 1fr;
+        grid-template-areas:
+            "bio education"
+            "specialization experience"
+            "contact projects";
+    }
+
+    table {
+        table-layout: fixed;
+    }
+
+    th {
+        text-align: left;
+    }
+
+    td {
+        padding: 5px 20px;
+    }
+
+
+    .secHeading {
+        color: black;
+        font-weight: 600;
+    }
+
+    .tertHeading {
+        color: rgb(3, 215, 255);
+        font-weight: 400;
+    }
+
+    .name {
+        display: flex;
+        flex-direction: column;
+        margin-top: 50px;
+        left: 20px;
+        font-size: 35px;
+        color: black;
+    }
+
+    .image img {
+        border-radius: 50%;
+        height: 150px;
+        width: 150px;
+    }
+
+    .bio {
+        grid-area: bio;
+        padding: 10px 15px 0 0;
+    }
+
+    .education {
+        grid-area: education;
+        padding-left: 10px;
+        padding-top: 10px;
+    }
+
+    .specialization {
+        grid-area: specialization;
+        padding-left: 10px;
+        padding-top: 10px;
+    }
+
+    .experience {
+        grid-area: experience;
+        padding-left: 10px;
+        padding-top: 10px;
+    }
+
+    .contact {
+        grid-area: contact;
+        padding-left: 10px;
+        padding-top: 10px;
+    }
+
+    .projects {
+        grid-area: projects;
+        padding-left: 10px;
+        padding-top: 10px;
+    }
+</style>
+
+@if (loading)
+{
+    <Loader />
+}
+else
+{
+    <div class="resume">
+        <div class="resume-head">
+            <div class="image">
+                <img src="@(user.ProfilePicture == null ? "img/user.svg" : user.ProfilePicture)" />
+            </div>
+            <p class="name">@user.FullName @*(#@user.Id)*@</p>
+        </div>
+
+        <div class="resume-data">
+
+            <div class="bio">
+                <p class="secHeading">ДОДАТКОВА ІНФОРМАЦІЯ</p>
+                <p>@user.Bio</p>
+                <hr />
+            </div>
+
+            <div class="education">
+                <p class="secHeading">ОСВІТА</p>
+                <table>
+                    @foreach (var academicDetail in user.Resume.Educations)
+                    {
+                        <tr>
+                            <td>Ступінь освіти</td>
+                            <td>@academicDetail.Type</td>
+                        </tr>
+                        <tr>
+                            <td>Інститут/факультет/клас</td>
+                            <td>@academicDetail.Institute</td>
+                        </tr>
+                        <tr>
+                            <td>Назва навчального закладу</td>
+                            <td>@academicDetail.University</td>
+                        </tr>
+                        <tr>
+                            <td>Середній бал</td>
+                            <td>@academicDetail.AvgMark @academicDetail.MarkType</td>
+                        </tr>
+                        <tr>
+                            <td>Дата закінчення/відрахування</td>
+                            <td>@academicDetail.EndDate.ToShortDateString()</td>
+                        </tr>
+                    }
+                </table>
+                <hr />
+            </div>
+
+            <div class="specialization">
+                <p class="secHeading">УМІННЯ ТА НАВИЧКИ</p>
+                <ul>
+                    @foreach (var skill in user.Resume.Skills)
+                    {
+                        <li>@skill.Name</li>
+                    }
+                </ul>
+                <hr />
+            </div>
+
+            <div class="experience">
+                <p class="secHeading">ДОСВІД РОБОТИ</p>
+                @foreach (var expereince in user.Resume.Experiences)
+                {
+                    <p class="tertHeading">@expereince.Name</p>
+                    <p>Дата початку роботи: @expereince.StartDate.ToShortDateString()</p>
+                    <p>Дата закінчення роботи/звільнення: @expereince.EndDate.ToShortDateString()</p>
+                    <hr />
+                }
+            </div>
+
+            <div class="contact">
+                <p class="secHeading">КОНТАКТНІ ДАНІ</p>
+                <p class="tertHeading">Номер телефону:</p>
+                <p>@user.PhoneNumber</p>
+                <p class="tertHeading">Електронна адреса:</p>
+                <p> @user.Email</p>
+                <hr />
+            </div>
+
+            <div class="projects">
+                <p class="secHeading">ПРОЕКТИ</p>
+                @foreach (var project in user.Resume.Projects)
+                {
+                    <p class="tertHeading">@project.Title : </p>
+                    <p>Дата початку роботи: @project.StartDate.ToShortDateString()</p>
+                    <p>Дата закінчення роботи: @project.EndDate.ToShortDateString()</p>
+                }
+                <hr />
+            </div>
+
+        </div>
+    </div>
+}
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    public ClaimsPrincipal principal { get; set; }
+
+    [Parameter]
+    public string userid { get; set; }
+
+    private User user;
+    private bool loading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        loading = true;
+
+        principal = (await authenticationStateTask).User;
+        user = await userManager.Users
+        .Include(x => x.Resume)
+        .Include(x => x.Resume.Skills)
+        .Include(x => x.Resume.Educations)
+        .Include(x => x.Resume.Experiences)
+        .Include(x => x.Resume.Projects)
+        .AsSplitQuery()
+        .SingleAsync(x => x.Id == userid);
+        loading = false;
+    }
+}

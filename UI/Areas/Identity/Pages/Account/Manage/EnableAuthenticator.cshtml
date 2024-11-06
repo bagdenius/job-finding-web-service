@@ -1,0 +1,66 @@
+﻿@page
+@using UI.Areas.Identity.Pages.Account.Manage
+@model EnableAuthenticatorModel
+@{
+    ViewData["Title"] = "Налаштування подвійної аутентифікації";
+    ViewData["ActivePage"] = ManageNavPages.TwoFactorAuthentication;
+}
+
+<partial name="_StatusMessage" for="StatusMessage" />
+<h4>@ViewData["Title"]</h4>
+<div>
+    <p>Щоб використовуватися подвійну аутентифікацію виконайте наступні дії:</p>
+    <ol class="list">
+        <li>
+            <p>
+                Завантажте застосунок для подвійної аутентифікації, наприклад, Microsoft Authenticator для
+                <a href="https://go.microsoft.com/fwlink/?Linkid=825072">Android</a> та
+                <a href="https://go.microsoft.com/fwlink/?Linkid=825073">iOS</a> або
+                Google Authenticator для
+                <a
+                    href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&amp;hl=en">Android</a>
+                та
+                <a href="https://itunes.apple.com/us/app/google-authenticator/id388497605?mt=8">iOS</a>.
+            </p>
+        </li>
+        <li>
+            <p>Відскануйте QR-код або введіть цей ключ <kbd>@Model.SharedKey</kbd> у вашому застосунку для подвійної аутентифікації.
+                Пробіли та регістри не мають значення.</p>
+            <div id="qrCode"></div>
+            <div id="qrCodeData" data-url="@Html.Raw(@Model.AuthenticatorUri)"></div>
+        </li>
+        <li>
+            <p>
+                Після того, як ви відскануєте QR-код або введдете ключ, ваш застосунок для подвійної аутентифікації 
+                надасть вам унікальний код. ВВедіть даний код нище.
+            </p>
+            <div class="row">
+                <div class="col-md-6">
+                    <form id="send-code" method="post">
+                        <div class="form-group">
+                            <label asp-for="Input.Code" class="control-label">Код для верфікації</label>
+                            <input asp-for="Input.Code" class="form-control" autocomplete="off" />
+                            <span asp-validation-for="Input.Code" class="text-danger"></span>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Підтвердити</button>
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    </form>
+                </div>
+            </div>
+        </li>
+    </ol>
+</div>
+
+@section Scripts {
+<partial name="_ValidationScriptsPartial" />
+
+<script type="text/javascript" src="~/js/qrcodejs/qrcode.js"></script>
+<script type="text/javascript">
+    new QRCode(document.getElementById("qrCode"),
+        {
+            text: "@Html.Raw(Model.AuthenticatorUri)",
+            width: 150,
+            height: 150
+        });
+</script>
+}

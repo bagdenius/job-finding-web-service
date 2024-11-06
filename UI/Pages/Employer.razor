@@ -1,0 +1,274 @@
+﻿@page "/employer"
+@using UI.Extensions
+@attribute [Authorize(Roles = "Employer")]
+
+@inject UserManager<User> userManager
+@inject IVacancyService vacancyService
+@inject IApplicationService applicationService
+
+<div class="text-center my-5">
+	<h1 class="display-6">Додані вами вакансії</h1>
+</div>
+
+@if (loading)
+{
+	<Loader />
+}
+
+else
+{
+	<div class="my-5 alert alert-info">
+		<ul class="nav nav-pills">
+			<li class="nav-item">
+				<a class="nav-link" aria-current="page" href="/profile">Змінити профіль</a>
+			</li>
+
+			<li class="nav-item">
+				<a class="nav-link" target="_blank" href="/resume/@user.Id">Переглянути профіль</a>
+			</li>
+		</ul>
+	</div>
+
+	if (user != null && user.IsVerified)
+	{
+		<div class="row">
+			<div class="col-md-4">
+				<div class="mb-3">
+					<div class="d-flex align-items-center flex-column">
+						<img src="@(vacancy.Picture == null ? "img/default_logo.svg" : vacancy.Picture)" height="150"
+					 width="150" class="rounded card p-3" />
+					</div>
+				</div>
+				<div>
+					<div class="mb-3">
+						<label class="form-label">Логотип компанії</label>
+						<InputFile OnChange="@OnInputFileChange" class="form-control" />
+					</div>
+
+					<div class="mb-3">
+						<label class="form-label">Назва посади</label>
+						<input @bind="vacancy.Title" type="text" class="form-control" placeholder="*Розробник .NET">
+					</div>
+
+					<div class="mb-3">
+						<label class="form-label">Опис та умови роботи</label>
+						<textarea @bind="vacancy.Description" class="form-control" placeholder="*Мінімальний досвід роботи: 2 роки">
+							</textarea>
+					</div>
+					<div class="mb-3">
+						<label class="form-label">Сфера праці</label>
+						<select @bind="vacancy.Sector" class="form-control" placeholder="*Інформаційні технології">
+							@foreach (Enum value in Enum.GetValues(typeof(Sector)))
+							{
+								<option>@value.GetDisplayName()</option>
+							}
+						</select>
+					</div>
+					<div class="mb-3">
+						<label class="form-label">Місце роботи</label>
+						<input @bind="vacancy.Location" type="text" class="form-control"
+					   placeholder="*м. Київ, вул. Степана Бандери 14, оф. 224">
+					</div>
+					<button type="button" class="btn btn-success" @onclick="AddVacancy">Додати вакансію</button>
+				</div>
+			</div>
+			<div class="col-md-8">
+				@if (vacancies.Any())
+				{
+					<div class="accordion accordion-flush" id="accordion">
+						@foreach (var job in vacancies)
+						{
+							<div class="accordion-item">
+								<h2 class="accordion-header" id="flush-headingOne">
+									<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+							data-bs-target="#flush-@job.Id" aria-expanded="false" aria-controls="flush-collapseOne">
+										@job.Title
+									</button>
+								</h2>
+
+								<div id="flush-@job.Id" class="accordion-collapse collapse" data-bs-parent="#accordion">
+									<div class="accordion-body">
+										<div class="text-center my-3">
+											<h4>Заяви працівників</h4>
+										</div>
+
+										@if (job.Applications.Any())
+										{
+											<table class="table">
+												<thead>
+													<tr>
+														<th>Ім'я та прізвище</th>
+														<th>Освіта</th>
+														<th>Дата заяви</th>
+														<th>Резюме</th>
+														<th>Статус</th>
+													</tr>
+												</thead>
+												<tbody>
+													@foreach (var application in job.Applications)
+													{
+														<tr>
+															<td>@application.Name</td>
+															@*<td>@application.College</td>*@
+															<td>@application.CreationDate</td>
+															<td>
+																<a href="/resume/@application.ApplicantId" class="btn btn-light">
+																	Переглянути резюме <span class="oi oi-eye"></span>
+																</a>
+															</td>
+															<td>
+																@if (application.IsApproved)
+																{
+																	<span class="btn btn-success">
+																		Прийнято <span class="oi oi-circle-check"></span>
+																	</span>
+																}
+																else
+																{
+																	<button class="btn btn-primary" @onclick="(() => ApproveAsync(application))">
+																		Прийняти
+																	</button>
+																}
+															</td>
+														</tr>
+													}
+												</tbody>
+											</table>
+										}
+										else
+										{
+											<p class="text-muted text-sm-center">
+												Тут поки що пусто...
+											</p>
+										}
+
+										<div class="card my-2 p-3">
+											<div class="mb-3">
+												<label class="form-label">Посада</label>
+												<input @bind="job.Title" type="text" class="form-control"
+									   placeholder="*Assistant Programmer">
+											</div>
+											<div class="m-1">
+												<label class="form-label">Опис та умови роботи</label>
+												<textarea @bind="job.Description" class="form-control"
+										  placeholder="*Мінімальний досвід роботи: 2 роки"></textarea>
+											</div>
+											<div class="mb-3">
+												<label class="form-label">Сфера праці</label>
+												<select @bind="job.Sector" class="form-control" placeholder="*Інформаційні технології">
+													@foreach (Enum value in Enum.GetValues(typeof(Sector)))
+													{
+														<option>@value.GetDisplayName()</option>
+													}
+												</select>
+											</div>
+											<div class="mb-3">
+												<label class="form-label">Місце роботи</label>
+												<input @bind="job.Location" type="text" class="form-control"
+									   placeholder="*м. Київ, вул. Степана Бандери 14, оф. 224">
+											</div>
+
+											<div class="m-1 mt-2">
+												<button type="button" class="btn btn-primary"
+										@onclick="(() => UpdateVacancy(job))">
+													Зберегти
+												</button>
+												<button type="button" class="btn btn-danger"
+										@onclick="(() => RemoveVacancy(job.Id))">
+													Видалити
+												</button>
+
+												<a href="/job/@job.Id" class="btn btn-primary" target="_blank">
+													Переглянути
+												</a>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						}
+					</div>
+				}
+				else
+				{
+					<NoData />
+				}
+			</div>
+		</div>
+	}
+	else
+	{
+		<p class="text-muted text-sm-center">
+			Ваша компанія/організація ще не пройшла перевірку, спробуйте пізніше
+		</p>
+	}
+}
+
+
+@code {
+	[CascadingParameter]
+	private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+	private User user;
+	private VacancyModel vacancy;
+	private IEnumerable<VacancyModel> vacancies;
+
+	private bool loading = false;
+
+	protected override async Task OnInitializedAsync()
+	{
+		loading = true;
+
+		vacancy = new VacancyModel();
+		user = await userManager.GetUserAsync((await authenticationStateTask).User);
+
+		vacancies = await vacancyService.GetByUserId(user.Id);
+
+
+
+
+		loading = false;
+	}
+
+	private async Task AddVacancy()
+	{
+		await vacancyService.Add(new VacancyModel
+			{
+				Id = Guid.NewGuid().ToString(),
+				Title = vacancy.Title,
+				Description = vacancy.Description,
+				Location = vacancy.Location,
+				Sector = vacancy.Sector,
+				EmployerId = user.Id,
+				Picture = vacancy.Picture
+			});
+		await OnInitializedAsync();
+	}
+
+	private async Task RemoveVacancy(string id)
+	{
+		await vacancyService.Remove(id);
+		await OnInitializedAsync();
+	}
+
+	private async Task UpdateVacancy(VacancyModel job)
+	{
+		await vacancyService.Update(job);
+	}
+
+	private async Task ApproveAsync(ApplicationModel application)
+	{
+		application.IsApproved = true;
+		await applicationService.Update(application);
+	}
+
+	private async Task OnInputFileChange(InputFileChangeEventArgs e)
+	{
+		var format = "image/png";
+		var imageFile = e.File;
+		var resizedImageFile = await imageFile.RequestImageFileAsync(format, 300, 300);
+		var buffer = new byte[resizedImageFile.Size];
+		await resizedImageFile.OpenReadStream().ReadAsync(buffer);
+		vacancy.Picture = $"data:{format};base64,{Convert.ToBase64String(buffer)}";
+	}
+}

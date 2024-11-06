@@ -1,0 +1,135 @@
+﻿@namespace UI.Shared
+@attribute [Authorize]
+@inherits LayoutComponentBase
+
+<style>
+    .center-img {
+        display: block;
+        margin: 0 auto;
+    }
+</style>
+
+<header>
+    <nav>
+        <a class="navbar-brand-c align-content-center" href="">
+            <img src="img/naulogo.png" alt="img" style="height: 8vh; margin: 1vh;">
+        </a>
+
+        @if (user.IsInRole("Employer"))
+        {
+            <a href="/employer" class="btn d-none d-md-block">Панель роботодавця</a>
+        }
+        @if (user.IsInRole("Applicant"))
+        {
+            <a href="/applicant" class="btn d-none d-md-block">Панель працівника</a>
+        }
+        @if (user.IsInRole("Admin"))
+        {
+            <a href="/admin" class="btn d-none d-md-block">Панель адміністратора</a>
+        }
+        <a href="/profile" class="btn d-none d-md-block">Профіль</a>
+
+        <a href="/faqs" class="btn d-none d-md-block">Запитання і відповіді</a>
+        <a href="https://nau.edu.ua/" class="btn d-none d-md-block">Національний авіаційний університет</a>
+
+
+        <a class="btn btn-sm d"  role="button"
+           id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+            <span class="oi oi-menu"></span>
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+            <AuthorizeView>
+                <Authorized>
+                    <li><a class="dropdown-item btn-sm" href="/profile">Профіль</a></li>
+                    <li><a class="dropdown-item btn-sm" href="Identity/Account/Manage">Управління аккаунтом</a></li>
+                    <li>
+                        <form method="post" action="Identity/Account/LogOut">
+                            <button class="dropdown-item btn-sm" type="submit">Вихід з аккаунта</button>
+                        </form>
+                    </li>
+                    @if (user.IsInRole("Admin"))
+                    {
+                        <li>
+                            <a href="/admin" class="dropdown-item btn-sm">Панель адміністратора</a>
+                        </li>
+                    }
+                    @if (user.IsInRole("Employer"))
+                    {
+                        <li>
+                            <a href="/employer" class="dropdown-item btn-sm">Управління вакансіями</a>
+                        </li>
+
+                    }
+                    @if (user.IsInRole("Applicant"))
+                    {
+                        <li>
+                            <a href="/applicant" class="dropdown-item btn-sm">Список поданих заяв</a>
+                        </li>
+                    }
+                </Authorized>
+                <NotAuthorized>
+                    <li><a class="dropdown-item btn-sm" href="Identity/Account/Authorize">Реєстрація працівника</a></li>
+                    <li><a class="dropdown-item btn-sm" href="Identity/Account/Register">Реєстрація роботодавця</a></li>
+                    <li><a class="dropdown-item btn-sm" href="Identity/Account/Login">Увійти</a></li>
+                </NotAuthorized>
+            </AuthorizeView>
+        </ul>
+
+    </nav>
+</header>
+
+<div class="page">
+    <div class="main">
+        <div class="shadow px-4">
+            <LoginDisplay />
+        </div>
+
+
+        <div class="cover-container" style="height: 400px;">
+            <div class="cover">
+                <div style="display: flex;justify-content: center;">
+
+                    <div class="row" style="height: 350px;width: 800px;">
+                        <div class="col my-auto">
+                            <h1 class="display-5">
+                                <span style="font-size:22px;">
+                                    Сайт
+                                    <span style="font-weight:800;">#1</span>
+                                    для пошуку роботи
+                                </span>
+                                Робота мрії чекає на тебе!
+                            </h1>
+                        </div>
+                        <div class="col d-none d-md-block cover-image">
+                            <lottie-player src="https://assets10.lottiefiles.com/packages/lf20_5i9kyklo.json"
+                                           background="transparent" speed="1"
+                                           style="width: 400px; height: 400px;position:absolute;" loop autoplay>
+                            </lottie-player>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="content container px-4">
+            @Body
+        </div>
+
+    </div>
+</div>
+
+
+<Footer />
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    private ClaimsPrincipal user;
+
+    protected override async Task OnInitializedAsync()
+    {
+        user = (await authenticationStateTask).User;
+    }
+}

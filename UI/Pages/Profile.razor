@@ -1,0 +1,560 @@
+@page "/profile"
+@using UI.Extensions
+@attribute [Authorize]
+
+@inject UserManager<User> userManager
+
+@if (loading)
+{
+	<Loader />
+}
+else
+{
+	<div>
+
+		<div>
+			<div class="mb-3">
+				<div class="d-flex align-items-center flex-column">
+					<img src="@(user.ProfilePicture == null ? "img/user.svg" : user.ProfilePicture)" height="150"
+					 width="150" class="rounded card p-3" />
+				</div>
+			</div>
+
+			<h4 class="text-muted text-center"> Персональні дані</h4>
+
+			<div class="mb-3">
+				<label class="form-label">Зображення профіля</label>
+				<InputFile id="file-upload" OnChange="@OnInputFileChange" class="form-control" />
+			</div>
+			<div class="mb-3">
+				<label class="form-label">Ім'я та прізвище</label>
+				<input @bind="user.FullName" type="text" class="form-control" placeholder="Ім'я Прізвище'">
+			</div>
+			<div class="mb-3">
+				<label class="form-label">Посилання на LinkedIn профіль</label>
+				<input @bind="user.Resume.LinkedIn" type="url" class="form-control" placeholder="https://www.linkedin.com/">
+			</div>
+
+			<div class="mb-3">
+				<label class="form-label">Додаткова інформація</label>
+				<textarea @bind="user.Bio" type="text" class="form-control" 
+				placeholder="Заповніть додаткову інформацію про себе">
+																																																		</textarea>
+			</div>
+		</div>
+
+
+		@if (principal.IsInRole("Employer"))
+		{
+			<div>
+				<div class="mb-3">
+					<label class="form-label">Назва компанії</label>
+					<input @bind="user.Organisation" type="text" class="form-control" placeholder="Вкажіть назву компанії">
+				</div>
+				<div class="mb-3">
+					<label class="form-label">Сфера праці</label>
+					<select @bind="user.Sector" class="form-control" placeholder="*Інформаційні технології">
+						@foreach (Enum value in Enum.GetValues(typeof(Sector)))
+						{
+							<option>@value.GetDisplayName()</option>
+						}
+					</select>
+				</div>
+				<div class="mb-3">
+					<label class="form-label">Кількість працівників</label>
+					<select @bind="user.EmployeesCount" class="form-control" placeholder="*1-5">
+						<option>1-5</option>
+						<option>5-20</option>
+						<option>20-100</option>
+						<option>100-500</option>
+						<option>500-2000</option>
+						<option>більше 2000</option>
+					</select>
+				</div>
+
+			</div>
+		}
+
+
+		@if (principal.IsInRole("Applicant"))
+		{
+			<div class="my-5">
+				<div class="row">
+					<div class="col">
+						<h4 class="text-muted">Інформація про освіту</h4>
+					</div>
+					<div class="col text-lg-end">
+						<button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
+						data-bs-target="#academicModel">
+							<span class="oi oi-plus"></span>
+						</button>
+					</div>
+				</div>
+
+				@if (user.Resume.Educations.Any())
+				{
+					<table class="table">
+						<thead>
+							<tr>
+								<th>Тип</th>
+								<th>Інститут/Спеціальність</th>
+								<th>Навчальний заклад</th>
+								<th>Середній бал</th>
+								<th>Дата закінчення</th>
+								<th>#</th>
+							</tr>
+						</thead>
+						<tbody>
+							@foreach (var academicDetail in user.Resume.Educations)
+							{
+								<tr>
+									<td>@academicDetail.Type</td>
+									<td>@academicDetail.Institute</td>
+									<td>@academicDetail.University</td>
+									<td>@academicDetail.AvgMark @academicDetail.MarkType</td>
+									<td>@academicDetail.EndDate.ToShortDateString()</td>
+									<td>
+										<button @onclick="() => user.Resume.Educations.Remove(academicDetail)"
+								class="btn btn-danger">
+											<span class="oi oi-trash"></span>
+										</button>
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				}
+				else
+				{
+					<p class="text-muted my-2 m-1">
+						Додайте навчальний заклад
+					</p>
+				}
+			</div>
+
+			<div class="my-5">
+				<div class="row">
+					<div class="col">
+						<h4 class="text-muted">Досвід роботи</h4>
+					</div>
+					<div class="col text-lg-end">
+						<button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
+						data-bs-target="#experienceModal">
+							<span class="oi oi-plus"></span>
+						</button>
+					</div>
+				</div>
+
+				@if (user.Resume.Experiences.Any())
+				{
+					<table class="table">
+						<thead>
+							<tr>
+								<th>Посада та компанія</th>
+								<th>Дата початку роботи</th>
+								<th>Дата закінчення роботи/звільнення</th>
+								<th>#</th>
+							</tr>
+						</thead>
+						<tbody>
+							@foreach (var experience in user.Resume.Experiences)
+							{
+								<tr>
+									<td>@experience.Name</td>
+									<td>@experience.StartDate.ToShortDateString()</td>
+									<td>@experience.EndDate.ToShortDateString()</td>
+									<td>
+										<button @onclick="() => user.Resume.Experiences.Remove(experience)" class="btn btn-danger">
+											<span class="oi oi-trash"></span>
+										</button>
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				}
+				else
+				{
+					<p class="text-muted my-2 m-1">
+						Додайте ваші попередні місця роботи
+					</p>
+				}
+			</div>
+
+			<div class="my-5">
+				<div class="row">
+					<div class="col">
+						<h4 class="text-muted">Проекти</h4>
+					</div>
+					<div class="col text-lg-end">
+						<button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
+						data-bs-target="#projectModal">
+							<span class="oi oi-plus"></span>
+						</button>
+					</div>
+				</div>
+
+				@if (user.Resume.Projects.Any())
+				{
+					<table class="table">
+						<thead>
+							<tr>
+								<th>Назва проекту</th>
+								<th>Дата початку роботи</th>
+								<th>Дата закінчення роботи</th>
+								<th>#</th>
+							</tr>
+						</thead>
+						<tbody>
+							@foreach (var project in user.Resume.Projects)
+							{
+								<tr>
+									<td>@project.Title</td>
+									<td>@project.StartDate.ToShortDateString()</td>
+									<td>@project.EndDate.ToShortDateString()</td>
+									<td>
+										<button @onclick="() => user.Resume.Projects.Remove(project)" class="btn btn-danger">
+											<span class="oi oi-trash"></span>
+										</button>
+									</td>
+								</tr>
+								<tr>
+									<td colspan="4" class="alert alert-light">
+										@project.Summary
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				}
+				else
+				{
+					<p class="text-muted my-2 m-1">
+						Додайте проекти у яких ви брали участь
+					</p>
+				}
+			</div>
+
+			<div class="my-5">
+				<div class="row">
+					<div class="col">
+						<h4 class="text-muted">Вміння та навички</h4>
+					</div>
+					<div class="col text-lg-end">
+						<button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
+						data-bs-target="#skillModal">
+							<span class="oi oi-plus"></span>
+						</button>
+					</div>
+				</div>
+
+				@if (user.Resume.Skills.Any())
+				{
+					<div>
+						@foreach (var skill in user.Resume.Skills)
+						{
+							<span class="badge rounded-pill bg-primary">@skill.Name</span>
+						}
+					</div>
+				}
+				else
+				{
+					<p class="text-muted my-2 m-1">
+						Додайте вміння та навички роботи
+					</p>
+				}
+			</div>
+
+
+			<div class="modal fade" id="skillModal" tabindex="-1" aria-labelledby="skillModalLabel" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="skillModalLabel">Додати вміння або навичку</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							<div class="mb-3">
+								<label class="form-label">Назва або опис уміння або навички</label>
+								<input @bind="skill.Name" type="text" class="form-control" placeholder="C#">
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Вихід</button>
+							<button type="button" class="btn btn-success" data-bs-dismiss="modal" @onclick="AddSkill">
+								Додати вміння/навичку
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="modal fade" id="academicModel" tabindex="-1" aria-labelledby="academicModelLabel" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="academicModelLabel">Додати навчальний заклад</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							<EditForm Model="education">
+								<div class="mb-3">
+									<label class="form-label">Ступінь освіти</label>
+									@*<InputSelect @bind-Value="education.Type" class="form-control">
+										@foreach (Enum value in Enum.GetValues(typeof(EducationType)))
+										{
+									<option>@value.GetDisplayName()</option>
+										}
+							</InputSelect>*@
+							<select @bind="education.Type" type="text" class="form-control">
+								@foreach (Enum value in Enum.GetValues(typeof(EducationType)))
+										{
+									<option>@value.GetDisplayName()</option>
+										}
+							</select>
+						</div>
+						<div class="mb-3">
+							<label class="form-label">Назва навчального закладу</label>
+							<input @bind="education.University" type="text" class="form-control"
+								   placeholder="НАУ">
+						</div>
+						<div class="mb-3">
+							<label class="form-label">Інститут/факультет/клас</label>
+							<input @bind="education.Institute" type="text" class="form-control"
+								   placeholder="Факультет кібербезпеки, комп’ютерної та програмної інженерії">
+						</div>
+						<div class="mb-3">
+							<label class="form-label">Спеціальність/спеціалізація</label>
+							<input @bind="education.Specialization" type="text" class="form-control"
+								   placeholder="Інженерія програмного забезпечення">
+						</div>
+						<div class="mb-3">
+							<label class="form-label">Система оцінювання</label>
+							@*<InputSelect @bind-Value="education.MarkType" class="form-control">
+								@foreach (Enum value in Enum.GetValues(typeof(MarkType)))
+										{
+									<option>@value.GetDisplayName()</option>
+										}
+							</InputSelect>*@
+							<select @bind="education.MarkType" type="text" class="form-control">
+								@foreach (Enum value in Enum.GetValues(typeof(MarkType)))
+										{
+									<option>@value.GetDisplayName()</option>
+										}
+							</select>
+							
+						</div>
+						<div class="mb-3">
+							<label class="form-label">Середній бал</label>
+							<input @bind="education.AvgMark" type="number" class="form-control" placeholder="9.0">
+						</div>
+						<div class="mb-3">
+							<label class="form-label">Дата закінчення/відрахування</label>
+							<input @bind="education.EndDate" type="date" class="form-control">
+						</div>
+					</EditForm>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Вихід</button>
+					<button type="button" class="btn btn-success" data-bs-dismiss="modal"
+							@onclick="AddEducation">
+						Додати навчальний заклад
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+			<div class="modal fade" id="experienceModal" tabindex="-1" aria-labelledby="experienceModalLabel"
+		 aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="exampleModalLabel">Додати попереднє місце роботи</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							<div class="mb-3">
+								<label class="form-label">Назва та опис роботи</label>
+								<input @bind="experience.Name" type="text" class="form-control" placeholder="Junior .NET розробник">
+							</div>
+							<div class="mb-3">
+								<label class="form-label">Дата початку роботи</label>
+								<input @bind="experience.StartDate" type="date" class="form-control">
+							</div>
+							<div class="mb-3">
+								<label class="form-label">Дата закінчення роботи/звільнення</label>
+								<input @bind="experience.EndDate" type="date" class="form-control">
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Вихід</button>
+							<button type="button" class="btn btn-success" data-bs-dismiss="modal"
+							@onclick="AddJobExperience">
+								Додати місце роботи
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="modal fade" id="projectModal" tabindex="-1" aria-labelledby="projectModalLabel" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="projectModalLabel">Додати проект</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							<div class="mb-3">
+								<label class="form-label">Назва проекту</label>
+								<input @bind="project.Title" type="text" class="form-control" placeholder="Введіть назву проекту">
+							</div>
+							<div class="mb-3">
+								<label class="form-label">Опис та результати проекту</label>
+								<textarea @bind="project.Summary" type="text" class="form-control"
+								  placeholder="Введіть опис та результати проекту">
+											  </textarea>
+							</div>
+							<div class="mb-3">
+								<label class="form-label">Дата початку</label>
+								<input @bind="project.StartDate" type="date" class="form-control">
+							</div>
+							<div class="mb-3">
+								<label class="form-label">Дата завершення</label>
+								<input @bind="project.EndDate" type="date" class="form-control">
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Вихід</button>
+							<button type="button" class="btn btn-success" data-bs-dismiss="modal" @onclick="AddProject">
+								Додати проект
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		}
+
+		<div class="my-5">
+			<button class="btn btn-success" @onclick="UpdateProfile">
+				Оновити профіль
+			</button>
+
+			@if (principal.IsInRole("Applicant"))
+			{
+				<a href="/resume/@user.Id" class="btn btn-light mx-2">
+					Переглянути резюме <span class="oi oi-eye"></span>
+				</a>
+			}
+
+			@if (saved)
+			{
+				<span class="text-success mx-2">Дані збережно</span>
+			}
+		</div>
+	</div>
+}
+
+@code {
+	[CascadingParameter]
+	private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+	[Parameter]
+	public ClaimsPrincipal principal { get; set; }
+
+	private bool loading = false;
+	private bool saved = false;
+
+	private string userid;
+	private User user;
+
+
+	private Skill skill = new Skill();
+	private Project project = new Project();
+	private Experience experience = new Experience();
+	private Education education = new Education();
+
+	protected override async Task OnInitializedAsync()
+	{
+		loading = true;
+
+		principal = (await authenticationStateTask).User;
+		userid = userManager.GetUserId((await authenticationStateTask).User);
+		user = await userManager.Users
+		.Include(x => x.Resume)
+		.Include(x => x.Resume.Skills)
+		.Include(x => x.Resume.Educations)
+		.Include(x => x.Resume.Experiences)
+		.Include(x => x.Resume.Projects)
+		.AsSplitQuery()
+		.SingleAsync(x => x.Id == userid);
+
+		loading = false;
+	}
+
+	private async Task UpdateProfile()
+	{
+		saved = true;
+		await userManager.UpdateAsync(user);
+	}
+
+	private void AddEducation()
+	{
+		user.Resume.Educations.Add(new Education
+			{
+				Id = Guid.NewGuid().ToString(),
+				Type = education.Type,
+				Institute = education.Institute,
+				University = education.University,
+				Specialization = education.Specialization,
+				MarkType = education.MarkType,
+				AvgMark = education.AvgMark,
+				EndDate = education.EndDate
+			});
+	}
+
+	private void AddJobExperience()
+	{
+		user.Resume.Experiences.Add(new Experience
+			{
+				Id = Guid.NewGuid().ToString(),
+				Name = experience.Name,
+				StartDate = experience.StartDate,
+				EndDate = experience.EndDate
+			});
+	}
+
+	private void AddProject()
+	{
+		user.Resume.Projects.Add(new Project
+			{
+				Id = Guid.NewGuid().ToString(),
+				Title = project.Title,
+				Summary = project.Summary,
+				StartDate = project.StartDate,
+				EndDate = project.EndDate
+			});
+	}
+
+	private void AddSkill()
+	{
+		user.Resume.Skills.Add(new Skill
+			{
+				Id = Guid.NewGuid().ToString(),
+				Name = skill.Name
+			});
+	}
+
+
+	private async Task OnInputFileChange(InputFileChangeEventArgs e)
+	{
+		var format = "image/png";
+		var imageFile = e.File;
+		var resizedImageFile = await imageFile.RequestImageFileAsync(format, 150, 150);
+		var buffer = new byte[resizedImageFile.Size];
+		await resizedImageFile.OpenReadStream().ReadAsync(buffer);
+		user.ProfilePicture = $"data:{format};base64,{Convert.ToBase64String(buffer)}";
+		await UpdateProfile();
+	}
+}

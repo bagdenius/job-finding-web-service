@@ -1,0 +1,106 @@
+@page "/admin"
+@attribute [Authorize(Roles = "Admin")]
+
+@inject UserManager<User> userManager
+
+<div class="text-center my-5">
+    <h1 class="display-6">Панель адміністратора</h1>
+</div>
+
+@if (loading)
+{
+    <Loader />
+}
+else
+{
+    <div>
+    <div class="my-5 alert alert-info">
+        <ul class="nav nav-pills">
+            <li class="nav-item">
+                <a class="nav-link" href="/reports/jobs">Вакансії</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="/reports/applications">Заяви</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="/reports/applicants">Працівники</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="/reports/employers">Роботодавці/компанії</a>
+            </li>
+        </ul>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Представник</th>
+                <th>Компанія/Організація</th>
+                <th>Електронна адреса</th>
+                <th>Статус</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var employer in employers)
+                {
+
+                    <tr>
+                        <td>@employer.FullName</td>
+                        <td>@employer.Organisation</td>
+                        <td>@employer.Email</td>
+                        <td>
+                            @{
+                                var url = $"/resume/{employer.Id}";
+                            }
+                            <a href="@url">Переглянути профіль компанії</a>
+
+                        </td>
+                        <td>
+                            @if (employer.IsVerified)
+                            {
+                                <button class="btn btn-danger" @onclick="(() => ApproveAsync(employer, false))">
+                                    Відмовити схвалення
+                                </button>
+                            }
+                            else
+                            {
+                                <button class="btn btn-primary" @onclick="(() => ApproveAsync(employer))">
+                                    Схвалити компанію
+                                </button>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+    private User user;
+    private IEnumerable<User> employers;
+
+    private bool loading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        loading = true;
+
+        user = await userManager.GetUserAsync((await authenticationStateTask).User);
+        employers = await userManager.GetUsersInRoleAsync("Employer");
+
+        loading = false;
+    }
+
+
+    private async Task ApproveAsync(User employer, bool status = true)
+    {
+        employer.IsVerified = status;
+        await userManager.UpdateAsync(employer);
+    }
+}

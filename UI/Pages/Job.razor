@@ -1,0 +1,117 @@
+@page "/job/{jobid}"
+@attribute [Authorize]
+@inject UserManager<User> userManager
+@inject SignInManager<User> signInManager
+@inject IVacancyService vacancyService
+@inject IApplicationService applicationService
+
+<style>
+   .cover-container{
+       display: none;
+   }
+</style>
+
+@if (loading)
+{
+    <Loader />
+}
+else
+{
+    <div class="text-center my-5">
+        <h1 class="display-6">@job.Title</h1>
+    </div>
+
+    <div class="job">
+    <div class="shadow p-3 mb-3 bg-body rounded">
+        <div class="my-5 text-center">
+            <img src="@(job.Picture == null ? "img/default_logo.svg" : job.Picture)" 
+                height="200" width="200"
+                class="rounded p-2 mx-auto" style="border: 2px solid #eee;" />
+        </div>
+        <div class="my-5">
+            <p>@job.Description</p>
+            <p class="text-muted">
+                @if (verified)
+                    {
+                        <span class="badge bg-success mx-1">Заяву схвалено</span>
+                    }
+                    <span class="oi oi-map-marker"></span>
+                    @job.Location
+                    <span class="oi oi-wrench mx-1"></span>
+                    @job.Sector
+                </p>
+            </div>
+            <div class="mt-10 mx-auto">
+                @if (user != null && user.IsInRole("Applicant"))
+                {
+                    if (jobApplied)
+                    {
+                        <button class="btn btn-success">
+                            Заяву подано <span class="oi oi-circle-check"></span>
+                        </button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-success" @onclick="ApplyAsync">Подати заяву</button>
+                    }
+                }
+
+                @if (profile == null)
+                {
+                    <a href="/Identity/Account/Login" class="btn btn-primary btn-sm">
+                        Увійти як працівник
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+    [Parameter]
+    public string jobid { get; set; }
+
+    private ClaimsPrincipal user;
+
+    private VacancyModel job;
+    private User profile;
+
+    public bool jobApplied = false;
+
+    private bool loading = false;
+
+    private bool verified = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        loading = true;
+
+        user = (await authenticationStateTask).User;
+        job = await vacancyService.Get(jobid);
+
+        if (signInManager.IsSignedIn(user))
+        {
+            profile = await userManager.GetUserAsync(user);
+            jobApplied = applicationService.CheckApplication(profile.Id, jobid);
+        }
+
+        loading = false;
+    }
+
+    private async Task ApplyAsync()
+    {
+        var jobApplication = new ApplicationModel
+        {
+            Id = Guid.NewGuid().ToString(),
+            VacancyId = job.Id,
+            ApplicantId = profile.Id,
+            Name = profile.FullName,
+            CreationDate = DateTime.UtcNow
+        };
+
+        await applicationService.Add(jobApplication);
+        jobApplied = true;
+    }
+}

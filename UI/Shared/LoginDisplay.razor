@@ -1,0 +1,60 @@
+﻿@namespace UI.Shared
+
+
+@* <div class="navbar navbar-expand-lg navbar-light bg-light"> *@
+@*     <div class="dropdown"> *@
+@*         <a class="btn btn-light btn-sm d" style="white-space: nowrap; margin-left: 1.5rem;" role="button" *@
+@*             id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false"> *@
+@*             <span class="oi oi-menu"></span> *@
+@*         </a> *@
+@*         <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink"> *@
+@*             <AuthorizeView> *@
+@*                 <Authorized> *@
+@*                     <li><a class="dropdown-item btn-sm" href="/profile">Профіль</a></li> *@
+@*                     <li><a class="dropdown-item btn-sm" href="Identity/Account/Manage">Управління аккаунтом</a></li> *@
+@*                     <li> *@
+@*                         <form method="post" action="Identity/Account/LogOut"> *@
+@*                             <button class="dropdown-item btn-sm" type="submit">Вихід з аккаунта</button> *@
+@*                         </form> *@
+@*                     </li> *@
+@*                     @if (user.IsInRole("Admin")) *@
+@*                     { *@
+@*                         <li> *@
+@*                             <a href="/admin" class="dropdown-item btn-sm">Панель адміністратора</a> *@
+@*                         </li> *@
+@*                     } *@
+@*                     @if (user.IsInRole("Employer")) *@
+@*                     { *@
+@*                         <li> *@
+@*                             <a href="/employer" class="dropdown-item btn-sm">Управління вакансіями</a> *@
+@*                         </li> *@
+
+@*                     } *@
+@*                     @if (user.IsInRole("Applicant")) *@
+@*                     { *@
+@*                         <li> *@
+@*                             <a href="/applicant" class="dropdown-item btn-sm">Список поданих заяв</a> *@
+@*                         </li> *@
+@*                     } *@
+@*                 </Authorized> *@
+@*                 <NotAuthorized> *@
+@*                     <li><a class="dropdown-item btn-sm" href="Identity/Account/Authorize">Реєстрація працівника</a></li> *@
+@*                     <li><a class="dropdown-item btn-sm" href="Identity/Account/Register">Реєстрація роботодавця</a></li> *@
+@*                     <li><a class="dropdown-item btn-sm" href="Identity/Account/Login">Увійти</a></li> *@
+@*                 </NotAuthorized> *@
+@*             </AuthorizeView> *@
+@*         </ul> *@
+@*     </div> *@
+@* </div> *@
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    private ClaimsPrincipal user;
+
+    protected override async Task OnInitializedAsync()
+    {
+        user = (await authenticationStateTask).User;
+    }
+}

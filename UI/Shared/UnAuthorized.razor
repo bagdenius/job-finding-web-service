@@ -1,0 +1,9 @@
+﻿@namespace UI.Shared
+@inject NavigationManager NavigationManager
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Run(() => NavigationManager.NavigateTo("/Identity/Account/Login", true));
+    }
+}

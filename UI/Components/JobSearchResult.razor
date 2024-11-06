@@ -1,0 +1,96 @@
+﻿@inject UserManager<User> userManager
+@inject IApplicationService jobApplicationService
+
+@if (loading)
+{
+    <Loader />
+}
+else
+{
+    <div class="shadow p-3 mb-3 bg-body rounded">
+    <div class="jobresult row">
+        <div class="col-md-2 m-auto">
+            <img src="@(job.Picture == null ? "img/default_logo.svg" : job.Picture)" height="100" width="100"
+                class="rounded border-1 p-2" />
+        </div>
+        <div class="col-md-7">
+            <h2>
+                @job.Title
+            </h2>
+            <p class="description">@job.Description</p>
+            <p class="text-muted">
+                @if (verified)
+                    {
+                        <span class="badge bg-success mx-1">Заяву схвалено</span>
+                    }
+                    <span class="oi oi-map-marker"></span>
+                    @job.Location
+                    <span class="oi oi-wrench mx-1"></span>
+                    @job.Sector
+                </p>
+            </div>
+            <div class="col-md-3 m-auto">
+                @if (user != null && user.IsInRole("Applicant"))
+                {
+                    if (jobApplied)
+                    {
+                        <button class="btn btn-success">
+                            Заяву подано <span class="oi oi-circle-check"></span>
+                        </button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-success" @onclick="ApplyAsync">Подати заяву</button>
+                    }
+                }
+
+                @if (user == null)
+                {
+                    <a href="/Identity/Account/Login" class="btn btn-primary btn-sm">
+                        Увійти як працівник
+                    </a>
+                }
+
+                <a href="/job/@job.Id" class="btn btn-primary btn-sm m-2" target="_blank">
+                    Переглянути
+                </a>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public VacancyModel job { get; set; }
+
+    [Parameter]
+    public ClaimsPrincipal user { get; set; }
+
+    [Parameter]
+    public bool jobApplied { get; set; } = false;
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+
+    private bool loading = false;
+
+    private bool verified = false;
+
+    private async Task ApplyAsync()
+    {
+        var profile = await userManager.GetUserAsync(user);
+        var jobApplication = new ApplicationModel
+        {
+            Id = Guid.NewGuid().ToString(),
+            VacancyId = job.Id,
+            ApplicantId = profile.Id,
+            Name = profile.FullName,
+            //College = profile.Organisation,
+            CreationDate = DateTime.UtcNow
+        };
+
+        await jobApplicationService.Add(jobApplication);
+        jobApplied = true;
+    }
+}

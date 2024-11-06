@@ -1,0 +1,48 @@
+﻿@page "/"
+@namespace UI.Pages
+@using UI
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JobPortal</title>
+    <base href="~/" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
+    <link href="css/site.css" rel="stylesheet" />
+    @* <link href="css/site2.css" rel="stylesheet" /> *@
+    @* <script src=@("https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js")></script> *@
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-player/2.0.4/lottie-player.js"></script>
+</head>
+
+<body>
+    <component type="typeof(App)" render-mode="ServerPrerendered" />
+
+    <div id="blazor-error-ui">
+        <environment include="Staging,Production">
+            Виникла помилка. Сторінка не буде відповідати до її перезавантаження.
+        </environment>
+        <environment include="Development">
+            Виникло необроблене виключення. Перегляньте подробиці в інструменті розробника.
+        </environment>
+        <a href="" class="reload">Перезавантажити сторінку</a>
+        <a class="dismiss">🗙</a>
+    </div>
+
+    <script src="_framework/blazor.server.js"></script>
+    <script src="js/bootstrap/bootstrap.bundle.min.js"></script>
+    @* <script src="js/lottie/dist/lottie-player.js"></script> *@
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-player/2.0.4/lottie-player.js"></script>
+</body>
+
+</html>

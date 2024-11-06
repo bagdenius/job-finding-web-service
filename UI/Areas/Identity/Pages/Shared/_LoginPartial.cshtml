@@ -1,0 +1,54 @@
+﻿@using Microsoft.AspNetCore.Identity
+
+@inject SignInManager<User> signInManager
+
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<div class="dropdown">
+    <a class="btn btn-light btn-sm dropdown-toggle" style="white-space: nowrap; margin-left: 1.5rem;" role="button"
+        id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+        <span class="oi oi-menu"></span>
+
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+        @if (signInManager.IsSignedIn(User))
+        {
+            <li><a class="dropdown-item btn-sm" href="/profile">Profile</a></li>
+
+            <li>
+                <a class="dropdown-item btn-sm" asp-area="Identity" asp-page="/Account/Manage/Index"
+                title="Manage">Управління аккаунтом</a>
+            </li>
+            <li>
+                <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="/"
+                method="post">
+                    <button type="submit" class="dropdown-item btn-sm">Вийти із аккаунта</button>
+                </form>
+            </li>
+            if (User.IsInRole("Admin"))
+            {
+                <li><a href="/admin" class="dropdown-item btn-sm">Панель адміністратора</a></li>
+            }
+            if (User.IsInRole("Employer"))
+            {
+                <li><a href="/employer" class="dropdown-item btn-sm">Управління вакансіями</a></li>
+            }
+            if (User.IsInRole("Applicant"))
+            {
+                <li><a href="/applicant" class="dropdown-item btn-sm">Управління заявами</a></li>
+            }
+        }
+        else
+        {
+            <li>
+                <a class="dropdown-item btn-sm" asp-area="Identity" asp-page="/Account/Authorize">Реєстрація працівника</a>
+            </li>
+            <li>
+                <a class="dropdown-item btn-sm" asp-area="Identity" asp-page="/Account/Register">Реєстрація роботодавця</a>
+            </li>
+            <li>
+                <a class="dropdown-item btn-sm" asp-area="Identity" asp-page="/Account/Login">Увійти в аккаунт</a>
+            </li>
+        }
+    </ul>
+</div>

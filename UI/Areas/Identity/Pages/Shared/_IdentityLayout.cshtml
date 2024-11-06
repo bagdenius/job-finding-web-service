@@ -1,0 +1,32 @@
+﻿@using UI.Shared
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <link rel="stylesheet" href="~/css/bootstrap/bootstrap.min.css" />
+    <link href="~/css/site.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="page">
+        <div class="main">
+            <div class="shadow top-row px-4 auth">
+                <partial name="_LoginPartial" />
+            </div>
+
+            <div class="content container px-4">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+
+    @(await Html.RenderComponentAsync<Footer>(RenderMode.ServerPrerendered))
+
+    <script src="~/js/bootstrap/bootstrap.bundle.min.js"></script>
+    @* <script src="~/js/lottie/dist/lottie-player.js"></script> *@
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-player/2.0.4/lottie-player.js"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

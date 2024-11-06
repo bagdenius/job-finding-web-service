@@ -1,0 +1,95 @@
+﻿@page "/applicant"
+@attribute [Authorize(Roles = "Applicant")]
+
+@inject UserManager<User> userManager
+@inject IApplicationService jobApplicationService
+
+<div class="text-center my-5">
+    <h1 class="display-6">Ваші заяви за вакансіями</h1>
+</div>
+
+@if (loading)
+{
+    <Loader />
+}
+else
+{
+    <div class="my-5 alert alert-info">
+        <ul class="nav nav-pills">
+            <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="/profile">Змінити профіль</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" target="_blank" href="/resume/@user.Id">Переглянути резюме</a>
+            </li>
+        </ul>
+    </div>
+
+    <div>
+        @if (jobApplications.Any())
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Назва посади</th>
+                        <th>Сфера праці</th>
+                        <th>Місце роботи</th>
+                        <th>Дата заяви</th>
+                        <th>Статус</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var application in jobApplications)
+                    {
+                        <tr>
+                            <td>@application.Vacancy.Title</td>
+                            <td>@application.Vacancy.Sector</td>
+                            <td>@application.Vacancy.Location</td>
+                            <td>@application.CreationDate</td>
+                            <td>
+                                @if (application.IsApproved)
+                                {
+                                    <span class="badge bg-success">
+                                        Вітаємо, вашу заяву було схвалено <span class="oi oi-circle-check"></span>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">
+                                        Заява знаходиться на розгляді <span class="oi oi-reload"></span>
+                                    </span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <NoData />
+        }
+    </div>
+}
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    private bool loading = false;
+
+    private User user;
+    private IEnumerable<ApplicationModel> jobApplications;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        loading = true;
+
+        user = await userManager.GetUserAsync((await authenticationStateTask).User);
+        jobApplications = await jobApplicationService.FindByUserId(user.Id);
+
+        loading = false;
+    }
+}

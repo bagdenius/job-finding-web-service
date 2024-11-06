@@ -1,0 +1,269 @@
+@import url("open-iconic/font/css/open-iconic-bootstrap.min.css");
+
+html,
+body {
+    /*  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;*/
+    font-family: "Rubik", sans-serif;
+    background-color: #f5f7fa;
+}
+
+a,
+.btn-link {
+    color: #4facfe;
+    text-decoration: none;
+}
+
+.btn-primary {
+    color: #fff;
+    background-image: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
+    border-color: #00f2fe;
+}
+
+header > nav {
+    /*  background-color: #39009f;*/
+    background-color: #7850B3;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+    header > nav .btn {
+        color: #fff;
+        font-weight: 600;
+    }
+
+.page {
+    min-height: 50vh;
+}
+
+.dropdown-local {
+    background-color: #4f1fbb;
+}
+
+.jobresult .description {
+    height: 60px;
+    color: #666;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+/* .dropdown-local-1{
+  background-color: #4f1fbb;
+  padding:15px 0px;
+} */
+
+.cover-card {
+    border-radius: 16px;
+    background-color: #fff;
+    margin-top: 16px;
+    box-shadow: 3px 3px 10px -8px black;
+}
+
+.valid.modified:not([type="checkbox"]) {
+    outline: 1px solid #26b050;
+}
+
+.invalid {
+    outline: 1px solid red;
+}
+
+.validation-message {
+    color: red;
+}
+
+.form-group {
+    margin: 20px 0;
+}
+
+#blazor-error-ui {
+    background: lightyellow;
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+    #blazor-error-ui .dismiss {
+        cursor: pointer;
+        position: absolute;
+        right: 0.75rem;
+        top: 0.5rem;
+    }
+
+.page {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.main {
+    flex: 1;
+}
+
+footer {
+    margin-top: 100px;
+    padding: 100px 0;
+    background-color: #001d38;
+}
+
+.top-row {
+    background-color: #f7f7f7;
+    justify-content: flex-end;
+    height: 3.5rem;
+    display: flex;
+    align-items: center;
+    z-index: 1000 !important;
+}
+
+.top-link {
+    white-space: nowrap;
+    margin-left: 1.5rem;
+}
+
+.top-row a:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media (max-width: 640.98px) {
+    .top-row:not(.auth) {
+        display: none;
+    }
+
+    .top-row.auth {
+        justify-content: space-between;
+    }
+
+    .top-row a,
+    .top-row .btn-link {
+        margin-left: 0;
+    }
+
+    .top-color::after {
+        height: 1.9rem;
+    }
+
+    .top-color::before {
+        height: 1.9rem;
+    }
+
+    .cover-card {
+        left: -3vw;
+    }
+
+    video {
+        margin-bottom: 60px;
+    }
+
+    .cover2 {
+        flex-direction: column-reverse;
+    }
+
+    .random-circle {
+        left: 10px;
+    }
+}
+
+@media (min-width: 641px) {
+    .page {
+        flex-direction: row;
+    }
+
+    .top-row {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+    }
+}
+
+.cover {
+    background: linear-gradient(90deg, #835c9e, #8253eb);
+    padding: 40px 60px;
+    color: #fff;
+    min-width: 100%;
+}
+
+.text {
+    width: 40vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    z-index: 1;
+}
+
+.cover2 {
+    min-height: 500px;
+    display: flex;
+    justify-content: space-around;
+    padding: 40px 60px;
+    z-index: -2;
+    min-width: 100%;
+    margin: 20px -30px;
+}
+
+.random-circle {
+    height: 300px;
+    width: 300px;
+    position: absolute;
+    background-color: rgb(253, 114, 90);
+    border-radius: 50%;
+    z-index: 0;
+    top: 60px;
+    right: 350px;
+}
+
+.accordion-item {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+
+
+    .accordion-item .accordion-button {
+        border: none !important;
+        outline: none !important;
+    }
+
+.sector-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+.sector-card {
+    width: 220px;
+    height: 180px;
+    margin: 10px;
+    padding: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    border-radius: 8px;
+    box-shadow: 2px 2px 10px -7px black !important;
+}
+
+    .sector-card img {
+        width: 100px;
+        height: 100px;
+    }
+
+    .sector-card h4 {
+        margin: 20px 0;
+        font-size: 18px;
+    }
+
+    .sector-card:hover {
+        background: linear-gradient(90deg, #bb90da, #9164f1);
+    }
+
+        .sector-card:hover h4 {
+            color: #fff !important;
+        }
