@@ -4,6 +4,7 @@
 @code {
     protected override async Task OnInitializedAsync()
     {
-        await Task.Run(() => NavigationManager.NavigateTo("/Identity/Account/Login", true));
+        NavigationManager.NavigateTo("/Identity/Account/Login", true);
+        await base.OnInitializedAsync();
     }
 }
