@@ -16,11 +16,19 @@ pipeline {
                 }
             }
         }
+
+        stage('Test') {
+            steps {
+                script {
+                    bat "dotnet test --no-restore --configuration Debug"
+                }
+            }
+        }
     }
     
     post {
         success {
-            echo 'Збірка завершена успішно!'
+            echo 'Збірка та тестування завершені успішно!'
         }
     }
 }
