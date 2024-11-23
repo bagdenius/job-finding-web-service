@@ -24,7 +24,7 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                    bat "dotnet test --no-restore --configuration Debug"
+                    bat "dotnet test \"Services.Tests.csproj\" --no-restore --no-build --verbosity normal --configuration Debug"
                 }
             }
         }
