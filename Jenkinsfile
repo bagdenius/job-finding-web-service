@@ -20,7 +20,7 @@ pipeline {
     
     post {
         success {
-            echo 'Build completed successfully!'
+            echo 'Збірка завершена успішно!'
         }
     }
 }
