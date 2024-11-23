@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        DOTNET_CLI_HOME = "C:\\Program Files\\dotnet\\6.0.416"
+    }
+
     stages {
         stage('Checkout') {
             steps {
