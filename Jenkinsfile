@@ -6,6 +6,7 @@ pipeline {
         AZURE_CLIENT_ID = credentials('jfws-app-id')
         AZURE_CLIENT_SECRET = credentials('jfws-secret')
         AZURE_TENANT_ID = credentials('jfws-tenant-id')
+        AZURE_SUBSCRIPTION_ID = credentials('base-subscription-id')
         AZURE_RESOURCE_GROUP = credentials('jfws-resource-group')
         AZURE_WEB_APP_NAME = credentials('jfws-web-app-name')
     }
@@ -46,6 +47,7 @@ pipeline {
             steps {
                 script {
                     bat 'az login --service-principal -u %AZURE_CLIENT_ID% -p %AZURE_CLIENT_SECRET% --tenant %AZURE_TENANT_ID%'
+                    bat 'az account set --subscription %AZURE_SUBSCRIPTION_ID%'
                     bat 'az webapp deploy --resource-group %AZURE_RESOURCE_GROUP% --name %AZURE_WEB_APP_NAME% --src-path .\\publish'
                 }
             }
