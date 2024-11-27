@@ -46,10 +46,10 @@ pipeline {
         stage('Deployment') {
             steps {
                 script {
-                    bat 'az account clear'
+                    // bat 'az account clear'
                     bat 'az login --service-principal -u %AZURE_CLIENT_ID% -p %AZURE_CLIENT_SECRET% --tenant %AZURE_TENANT_ID%'
-                    bat 'az account set --subscription %AZURE_SUBSCRIPTION_ID%'
-                    bat 'az webapp deploy --resource-group %AZURE_RESOURCE_GROUP% --name %AZURE_WEB_APP_NAME% --src-path .\\publish'
+                    // bat 'az account set --subscription %AZURE_SUBSCRIPTION_ID%'
+                    bat 'az webapp deploy --resource-group %AZURE_RESOURCE_GROUP% --name %AZURE_WEB_APP_NAME% --src-path C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\job-finding-web-service\\publish'
                 }
             }
         }
