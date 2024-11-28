@@ -39,7 +39,7 @@ pipeline {
             steps {
                 script {
                     bat 'dotnet publish --no-restore --configuration Debug --output publish'
-                    bat 'compress-archive -path C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\job-finding-web-service\\publish\\* -destinationpath C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\job-finding-web-service\\publish.zip'
+                    bat 'Copy-Item -Path publish\\* -Force -PassThru | Get-ChildItem | Compress-Archive -DestinationPath publish.zip'
                 }
             }
         }
