@@ -22,7 +22,7 @@ pipeline {
             steps {
                 script {
                     bat 'dotnet restore'
-                    bat 'dotnet build --configuration Debug'
+                    bat 'dotnet build --configuration Release'
                 }
             }
         }
@@ -30,7 +30,7 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                    bat 'dotnet test \"Services.Tests\\Services.Tests.csproj\" --no-restore --no-build --verbosity normal --configuration Debug'
+                    bat 'dotnet test \"Services.Tests\\Services.Tests.csproj\" --no-restore --no-build --verbosity normal --configuration Release'
                 }
             }
         }
@@ -38,7 +38,7 @@ pipeline {
         stage('Publish') {
             steps {
                 script {
-                    bat 'dotnet publish --no-restore --configuration Debug --output publish'
+                    bat 'dotnet publish --no-restore --configuration Release --output publish'
                     bat 'powershell Compress-Archive -Path publish\\* -DestinationPath publish.zip -Force'
                 }
             }
