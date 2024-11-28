@@ -39,7 +39,7 @@ pipeline {
             steps {
                 script {
                     bat 'dotnet publish --no-restore --configuration Debug --output publish'
-                    bat 'zip -r publish.zip publish'
+                    bat 'Compress-Archive -Path publish -DestinationPath publish.zip'
                 }
             }
         }
@@ -49,12 +49,10 @@ pipeline {
                 script {
                     // bat 'az account clear'
                     bat 'az login --service-principal -u %AZURE_CLIENT_ID% -p %AZURE_CLIENT_SECRET% --tenant %AZURE_TENANT_ID%'
+                    bat 'az webapp config appsettings set --resource-group %AZURE_RESOURCE_GROUP% --name %AZURE_WEB_APP_NAME% --settings SCM_DO_BUILD_DURING_DEPLOYMENT=true'
                     // bat 'az account set --subscription %AZURE_SUBSCRIPTION_ID%'
                     // bat 'az webapp deploy --resource-group %AZURE_RESOURCE_GROUP% --name %AZURE_WEB_APP_NAME% --src-path C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\job-finding-web-service\\publish'
-                    bat 'az webapp deployment source config-zip \
-                            --resource-group %AZURE_RESOURCE_GROUP% \
-                            --name %AZURE_WEB_APP_NAME% \
-                            --src publish.zip'
+                    bat 'az webapp deploy --resource-group %AZURE_RESOURCE_GROUP% --name %AZURE_WEB_APP_NAME% --src-path publish.zip'
                 }
             }
         }
