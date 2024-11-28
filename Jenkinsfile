@@ -39,8 +39,7 @@ pipeline {
             steps {
                 script {
                     bat 'dotnet publish --no-restore --configuration Debug --output publish'
-                    bat 'chcp 1251'
-                    bat 'Compress-Archive -Path publish\\* -DestinationPath publish.zip'
+                    bat 'powershell Compress-Archive -Path publish\\* -DestinationPath publish.zip'
                 }
             }
         }
