@@ -3,7 +3,9 @@ using Entities;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.EntityFrameworkCore;
 using Services;
+using System.Configuration;
 using UI.Areas.Identity;
 using UI.WebServices;
 using UnitOfWorkSpace;
@@ -13,6 +15,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Конфігурація контейнера сервісів
 builder.Services.AddControllersWithViews();
 builder.Services.AddUnitOfWork();
+builder.Services.AddDbContext<DatabaseContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddServices();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 
