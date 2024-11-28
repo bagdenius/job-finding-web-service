@@ -39,7 +39,7 @@ pipeline {
             steps {
                 script {
                     bat 'dotnet publish --no-restore --configuration Debug --output publish'
-                    bat 'Compress-Archive -Path publish -DestinationPath publish.zip'
+                    bat 'compress-archive --verbose --path publish --destinationPath publish.zip'
                 }
             }
         }
